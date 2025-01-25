@@ -7,6 +7,9 @@ const APIInputForm = () => {
   const [url, setUrl] = useState("");
   const [headers, setHeaders] = useState("");
   const [requestBody, setRequestBody] = useState("");
+  const [successfulResponse, setSuccessfulResponse] = useState("");
+  const [errorResponse, setErrorResponse] = useState("");
+
   const [testResponse, setTestResponse] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -18,10 +21,18 @@ const APIInputForm = () => {
     setTestResponse(null);
 
     try {
-      const parsedHeaders = headers ? JSON.parse(headers) : {};
-      const parsedBody = requestBody ? JSON.parse(requestBody) : null;
-
-      const payload = { method, url, headers: parsedHeaders, body: parsedBody };
+      const parsedHeaders = headers;
+      const parsedBody = requestBody;
+      const parsedSuccessResponse = successfulResponse;
+      const parsedErrorResponse = errorResponse;
+      const payload = {
+        method,
+        url,
+        headers: parsedHeaders,
+        body: parsedBody,
+        parsedSuccessResponse,
+        parsedErrorResponse,
+      };
 
       const response = await axios.post(import.meta.env.VITE_API_URL, payload);
       setText(response.data.data);
@@ -98,6 +109,31 @@ const APIInputForm = () => {
             <textarea
               value={requestBody}
               onChange={(e) => setRequestBody(e.target.value)}
+              placeholder='{"title": "foo", "body": "bar", "userId": 1}'
+              className="w-full h-32 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            ></textarea>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Sample Response
+            </label>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Success Response (JSON)
+              </label>
+              <textarea
+                value={successfulResponse}
+                onChange={(e) => setSuccessfulResponse(e.target.value)}
+                placeholder='{"title": "foo", "body": "bar", "userId": 1}'
+                className="w-full h-32 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              ></textarea>
+            </div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Error Response (JSON)
+            </label>
+            <textarea
+              value={errorResponse}
+              onChange={(e) => setErrorResponse(e.target.value)}
               placeholder='{"title": "foo", "body": "bar", "userId": 1}'
               className="w-full h-32 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
             ></textarea>

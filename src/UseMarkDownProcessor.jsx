@@ -32,9 +32,6 @@ import { visit } from "unist-util-visit";
 export const ANCHOR_CLASS_NAME =
   "font-semibold underline text-emerald-700 underline-offset-[2px] decoration-1 hover:text-emerald-800 transition-colors";
 
-// Mixing arbitrary Markdown + Capsize leads to lots of challenges
-// with paragraphs and list items. This replaces paragraphs inside
-// list items into divs to avoid nesting Capsize.
 const rehypeListItemParagraphToDiv = () => {
   return (tree) => {
     visit(tree, "element", (element) => {
@@ -62,7 +59,7 @@ export const useMarkdownProcessor = (content) => {
   useEffect(() => {
     mermaid.initialize({ startOnLoad: false, theme: "forest" });
   }, []);
-
+  console.log(content);
   return useMemo(() => {
     return unified()
       .use(remarkParse)
@@ -308,7 +305,7 @@ const CodeBlock = ({ children, className }) => {
                 title="Latex diagram preview"
                 size="3xl"
               >
-                {/* <Latex content={children?.toString() ?? ""} /> */}
+                <Latex content={children?.toString() ?? ""} />
               </Dialog>
             </>
           ) : null}
@@ -324,47 +321,45 @@ const CodeBlock = ({ children, className }) => {
   );
 };
 
-// const Latex = ({ content }) => {
-//   const [diagram, setDiagram] = (useState < string) | (boolean > true);
+const Latex = ({ content }) => {
+  const [diagram, setDiagram] = (useState < string) | (boolean > true);
 
-//   useEffect(() => {
-//     try {
-//     // //   const generator = new HtmlGenerator({ hyphenate: false });
-//     //   const fragment = parse(content, { generator: generator }).domFragment();
-//     //   setDiagram(fragment.firstElementChild.outerHTML);
-//     } catch (error) {
-//       console.error(error);
-//       setDiagram(false);
-//     }
-//   }, [content]);
+  useEffect(() => {
+    try {
+      // //   const generator = new HtmlGenerator({ hyphenate: false });
+      //   const fragment = parse(content, { generator: generator }).domFragment();
+      //   setDiagram(fragment.firstElementChild.outerHTML);
+    } catch (error) {
+      console.error(error);
+      setDiagram(false);
+    }
+  }, [content]);
 
-//   if (diagram === true) {
-//     return (
-//       <div className="flex gap-2 items-center">
-//         <CircleNotch className="animate-spin w-4 h-4 text-emerald-900" />
-//         <p className="font-sans text-sm text-slate-700">Rendering diagram...</p>
-//       </div>
-//     );
-//   } else if (diagram === false) {
-//     return (
-//       <p className="font-sans text-sm text-slate-700">
-//         Unable to render this diagram.
-//       </p>
-//     );
-//   } else {
-//     return <div dangerouslySetInnerHTML={{ __html: diagram ?? "" }} />;
-//   }
-// };
+  if (diagram === true) {
+    return (
+      <div className="flex gap-2 items-center">
+        <CircleNotch className="animate-spin w-4 h-4 text-emerald-900" />
+        <p className="font-sans text-sm text-slate-700">Rendering diagram...</p>
+      </div>
+    );
+  } else if (diagram === false) {
+    return (
+      <p className="font-sans text-sm text-slate-700">
+        Unable to render this diagram.
+      </p>
+    );
+  } else {
+    return <div dangerouslySetInnerHTML={{ __html: diagram ?? "" }} />;
+  }
+};
 
 const Mermaid = ({ content }) => {
   const [diagram, setDiagram] = (useState < string) | (boolean > true);
 
   useEffect(() => {
     const render = async () => {
-      // Generate a random ID for mermaid to use.
       const id = `mermaid-svg-${Math.round(Math.random() * 10000000)}`;
 
-      // Confirm the diagram is valid before rendering.
       if (await mermaid.parse(content, { suppressErrors: true })) {
         const { svg } = await mermaid.render(id, content);
         setDiagram(svg);
@@ -401,102 +396,102 @@ const Mermaid = ({ content }) => {
   }
 };
 
-export const MARKDOWN_TEST_MESSAGE = `
-# Heading level 1
+// export const MARKDOWN_TEST_MESSAGE = `
+// # Heading level 1
 
-This is the first paragraph.
+// This is the first paragraph.
 
-This is the second paragraph.
+// This is the second paragraph.
 
-This is the third paragraph.
+// This is the third paragraph.
 
-## Heading level 2
+// ## Heading level 2
 
-This is an [anchor](https://github.com).
+// This is an [anchor](https://github.com).
 
-### Heading level 3
+// ### Heading level 3
 
-This is **bold** and _italics_.
+// This is **bold** and _italics_.
 
-#### Heading level 4
+// #### Heading level 4
 
-This is \`inline\` code.
+// This is \`inline\` code.
 
-This is a code block:
+// This is a code block:
 
-\`\`\`tsx
-const Message = () => {
-  return <div>hi</div>;
-};
-\`\`\`
+// \`\`\`tsx
+// const Message = () => {
+//   return <div>hi</div>;
+// };
+// \`\`\`
 
-##### Heading level 5
+// ##### Heading level 5
 
-This is an unordered list:
+// This is an unordered list:
 
-- One
-- Two
-- Three, and **bold**
+// - One
+// - Two
+// - Three, and **bold**
 
-This is an ordered list:
+// This is an ordered list:
 
-1. One
-1. Two
-1. Three
+// 1. One
+// 1. Two
+// 1. Three
 
-This is a complex list:
+// This is a complex list:
 
-1. **Bold**: One
-    - One
-    - Two
-    - Three
-  
-2. **Bold**: Three
-    - One
-    - Two
-    - Three
-  
-3. **Bold**: Four
-    - One
-    - Two
-    - Three
+// 1. **Bold**: One
+//     - One
+//     - Two
+//     - Three
 
-###### Heading level 6
+// 2. **Bold**: Three
+//     - One
+//     - Two
+//     - Three
 
-> This is a blockquote.
+// 3. **Bold**: Four
+//     - One
+//     - Two
+//     - Three
 
-This is a table:
+// ###### Heading level 6
 
-| Vegetable | Description |
-|-----------|-------------|
-| Carrot    | A crunchy, orange root vegetable that is rich in vitamins and minerals. It is commonly used in soups, salads, and as a snack. |
-| Broccoli  | A green vegetable with tightly packed florets that is high in fiber, vitamins, and antioxidants. It can be steamed, boiled, stir-fried, or roasted. |
-| Spinach   | A leafy green vegetable that is dense in nutrients like iron, calcium, and vitamins. It can be eaten raw in salads or cooked in various dishes. |
-| Bell Pepper | A colorful, sweet vegetable available in different colors such as red, yellow, and green. It is often used in stir-fries, salads, or stuffed recipes. |
-| Tomato    | A juicy fruit often used as a vegetable in culinary preparations. It comes in various shapes, sizes, and colors and is used in salads, sauces, and sandwiches. |
-| Cucumber   | A cool and refreshing vegetable with a high water content. It is commonly used in salads, sandwiches, or as a crunchy snack. |
-| Zucchini | A summer squash with a mild flavor and tender texture. It can be sautéed, grilled, roasted, or used in baking recipes. |
-| Cauliflower | A versatile vegetable that can be roasted, steamed, mashed, or used to make gluten-free alternatives like cauliflower rice or pizza crust. |
-| Green Beans | Long, slender pods that are low in calories and rich in vitamins. They can be steamed, stir-fried, or used in casseroles and salads. |
-| Potato | A starchy vegetable available in various varieties. It can be boiled, baked, mashed, or used in soups, fries, and many other dishes. |
+// > This is a blockquote.
 
-This is a mermaid diagram:
+// This is a table:
 
-\`\`\`mermaid
-gitGraph
-    commit
-    commit
-    branch develop
-    checkout develop
-    commit
-    commit
-    checkout main
-    merge develop
-    commit
-    commit
-\`\`\`
+// | Vegetable | Description |
+// |-----------|-------------|
+// | Carrot    | A crunchy, orange root vegetable that is rich in vitamins and minerals. It is commonly used in soups, salads, and as a snack. |
+// | Broccoli  | A green vegetable with tightly packed florets that is high in fiber, vitamins, and antioxidants. It can be steamed, boiled, stir-fried, or roasted. |
+// | Spinach   | A leafy green vegetable that is dense in nutrients like iron, calcium, and vitamins. It can be eaten raw in salads or cooked in various dishes. |
+// | Bell Pepper | A colorful, sweet vegetable available in different colors such as red, yellow, and green. It is often used in stir-fries, salads, or stuffed recipes. |
+// | Tomato    | A juicy fruit often used as a vegetable in culinary preparations. It comes in various shapes, sizes, and colors and is used in salads, sauces, and sandwiches. |
+// | Cucumber   | A cool and refreshing vegetable with a high water content. It is commonly used in salads, sandwiches, or as a crunchy snack. |
+// | Zucchini | A summer squash with a mild flavor and tender texture. It can be sautéed, grilled, roasted, or used in baking recipes. |
+// | Cauliflower | A versatile vegetable that can be roasted, steamed, mashed, or used to make gluten-free alternatives like cauliflower rice or pizza crust. |
+// | Green Beans | Long, slender pods that are low in calories and rich in vitamins. They can be steamed, stir-fried, or used in casseroles and salads. |
+// | Potato | A starchy vegetable available in various varieties. It can be boiled, baked, mashed, or used in soups, fries, and many other dishes. |
 
-\`\`\`latex
-\\[F(x) = \\int_{a}^{b} f(x) \\, dx\\]
-\`\`\`
-`;
+// This is a mermaid diagram:
+
+// \`\`\`mermaid
+// gitGraph
+//     commit
+//     commit
+//     branch develop
+//     checkout develop
+//     commit
+//     commit
+//     checkout main
+//     merge develop
+//     commit
+//     commit
+// \`\`\`
+
+// \`\`\`latex
+// \\[F(x) = \\int_{a}^{b} f(x) \\, dx\\]
+// \`\`\`
+// `;

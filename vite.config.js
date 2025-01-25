@@ -13,4 +13,7 @@ export default defineConfig({
   esbuild: {
     jsx: "automatic", // Ensure JSX runtime is set to automatic
   },
+  defineConfig: {
+    logLevel: "info", // or "debug" for detailed logs
+  },
 });
